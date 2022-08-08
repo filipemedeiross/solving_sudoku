@@ -1,6 +1,6 @@
 import numpy as np
-from .problem_formulation import N, objective_grid
-from .generator import generator
+from .utils.problem_formulation import N, objective_grid
+from .utils.generator import generator
 
 
 class Sudoku:

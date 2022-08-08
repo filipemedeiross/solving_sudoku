@@ -1,5 +1,6 @@
 import numpy as np
 
+
 N = 9  # number of grid rows and columns
 STEP = N // 3  # defines the side of the quadrant
 
