@@ -4,38 +4,28 @@ from .generator import generator
 
 
 class Sudoku:
-    def __init__(self):
+    def __init__(self):  # creates a new valid sudoku and saves the initially filled positions
         self.grid = generator()
-        self.home = [(y, x) for y, x in zip(*np.where(self.grid != 0))]
+        self.home = [(y_fill, x_fill) for y_fill, x_fill in zip(*np.where(self.grid != 0))]
 
-    def insert_num(self, x, y, num):
-        if (y, x) in self.home:
-            print('Filled position in the source grid!')
-            return
-        elif y >= N or y < 0:
-            print('y value out of range!')
-            return
-        elif x >= N or x < 0:
-            print('x value out of range!')
-            return
-        elif num > N or num <= 0:
-            print('Value entered out of range!')
-            return
+    def insert_num(self, x, y, number):
+        if (y, x) not in self.home and 0 <= y < N and 0 <= x < N and 0 < num <= N:
+            self.grid[y, x] = number
+            return y, x  # if the operation is successful returns the changed position
 
-        self.grid[y, x] = num
+        return None
 
-    def clear_elem(self, y, x):
-        if (y, x) in self.home:
-            print('Filled position in the source grid!')
-            return
+    def clear_elem(self, x, y):
+        if (y, x) not in self.home:
+            self.grid[y, x] = 0
+            return y, x  # if the operation is successful returns the changed position
 
-        self.grid[y, x] = 0
+        return None
 
     def clear_grid(self):
-        for y in self.grid.shape[0]:
-            for x in self.grid.shape[1]:
-                if (y, x) not in self.home:
-                    self.grid[y, x] = 0
+        for i in range(N):
+            for j in range(N):
+                self.clear_elem(j, i)
 
     @property
     def won(self):
@@ -48,15 +38,21 @@ if __name__ == '__main__':
     print(sudoku.grid)
 
     while not sudoku.won:
-        y = int(input('Insert the line [0-8]:'))
-        x = int(input('Insert the column [0-8]:'))
-        num = int(input('Insert the number [enter to delete cell]:'))
+        y_input = int(input('Insert the line [0-8]:'))
+        x_input = int(input('Insert the column [0-8]:'))
+        num = input('Insert the number [enter to delete cell]:') or None
 
         if num:
-            sudoku.insert_num(x, y, num)
+            num = int(num)
+            sudoku.insert_num(x_input, y_input, num)
         else:
-            sudoku.clear_elem(x, y)
+            sudoku.clear_elem(x_input, y_input)
 
         print(sudoku.grid)
+
+        clear = input('Clear the grid [s/n]: ')
+
+        if clear in 'Ss':
+            sudoku.clear_grid()
 
     print('Parabéns! Você ganhou.')

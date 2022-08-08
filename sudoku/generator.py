@@ -1,45 +1,42 @@
 import numpy as np
 from .problem_formulation import N, objective_grid, flatten_position, available_nums
+from .solver_backtracking import solver_backtracking
 
 
-# Returns a new sudoku game grid:
-# 41 of the elements filled
-# possibility that there is no single solution
-def generator():
+# Returns a new sudoku game grid
+def generator(difficulty=41):
     grid = np.zeros((N, N))
 
-    moves = [None] * 81
-    size = 0
-    while True:
-        if objective_grid(grid):
-            while np.count_nonzero(grid) > 41:
-                pos = flatten_position(np.random.randint(81))
-                grid[pos] = 0
-
-            return grid
-
+    actions = [None] * 81
+    size = 0  # represents the grid fill level and the current position to be inserted
+    while not objective_grid(grid):
         # Getting the next available position and fill options
         pos = flatten_position(size)
         nums = available_nums(grid, *pos)
 
-        if nums:
-            num = nums.pop(np.random.randint(len(nums)))
-
-            grid[pos] = num
-            moves[size] = nums
-            size += 1
-
-            continue
-
-        size -= 1
-        while not moves[size]:
-            pos = flatten_position(size)
-
-            grid[pos] = 0
+        if not nums:
             size -= 1
 
-        pos = flatten_position(size)
-        num = moves[size].pop(np.random.randint(len(moves[size])))
+            while not actions[size]:
+                grid[flatten_position(size)] = 0
+                size -= 1
 
-        grid[pos] = num
+            num = actions[size].pop(np.random.randint(len(actions[size])))
+        else:
+            num = nums.pop(np.random.randint(len(nums)))
+            actions[size] = nums
+
+        grid[flatten_position(size)] = num
         size += 1
+
+    while np.count_nonzero(grid) > difficulty:
+        position = flatten_position(np.random.randint(N * N))
+
+        if grid[position]:
+            grid_copy = grid.copy()
+            grid_copy[position] = 0
+
+            if np.all(solver_backtracking(grid_copy)):  # single solution
+                grid[position] = 0
+
+    return grid
