@@ -1,58 +1,48 @@
 import numpy as np
-from .utils.problem_formulation import N, objective_grid
-from .utils.generator import generator
+from .utils import N, objective_grid, generator
 
 
-class Sudoku:
+class SudokuLogic:
     def __init__(self):  # creates a new valid sudoku and saves the initially filled positions
-        self.grid = generator()
-        self.home = [(y_fill, x_fill) for y_fill, x_fill in zip(*np.where(self.grid != 0))]
+        self.__grid = generator()
+        self.__clues = self.identify_clues()  # clue positions in (x, y) coordinates
 
-    def insert_num(self, x, y, number):
-        if (y, x) not in self.home and 0 <= y < N and 0 <= x < N and 0 < num <= N:
-            self.grid[y, x] = number
-            return y, x  # if the operation is successful returns the changed position
+    def update(self):
+        self.__grid = generator()
+        self.__clues = self.identify_clues()
+
+    def identify_clues(self):
+        return [(x_clue, y_clue) for y_clue, x_clue in zip(*np.where(self.grid != 0))]
+
+    def insert(self, x, y, number):
+        if not self.is_clue(x, y) and 0 <= x < N and 0 <= y < N and 0 < number <= N:
+            self.__grid[y, x] = number
+            return x, y  # if the operation is successful returns the changed position
 
         return None
 
-    def clear_elem(self, x, y):
-        if (y, x) not in self.home:
-            self.grid[y, x] = 0
-            return y, x  # if the operation is successful returns the changed position
+    def clear(self, x, y):
+        if not self.is_clue(x, y):
+            self.__grid[y, x] = 0
+            return x, y  # if the operation is successful returns the changed position
 
         return None
 
     def clear_grid(self):
-        for i in range(N):
-            for j in range(N):
-                self.clear_elem(j, i)
+        for y, x in zip(*np.where(self.grid)):
+            self.clear(x, y)
+
+    def is_clue(self, x, y):
+        return (x, y) in self.clues
+
+    @property
+    def grid(self):
+        return self.__grid
+
+    @property
+    def clues(self):
+        return self.__clues
 
     @property
     def won(self):
         return objective_grid(self.grid)
-
-
-if __name__ == '__main__':
-    sudoku = Sudoku()
-
-    print(sudoku.grid)
-
-    while not sudoku.won:
-        y_input = int(input('Insert the line [0-8]:'))
-        x_input = int(input('Insert the column [0-8]:'))
-        num = input('Insert the number [enter to delete cell]:') or None
-
-        if num:
-            num = int(num)
-            sudoku.insert_num(x_input, y_input, num)
-        else:
-            sudoku.clear_elem(x_input, y_input)
-
-        print(sudoku.grid)
-
-        clear = input('Clear the grid [s/n]: ')
-
-        if clear in 'Ss':
-            sudoku.clear_grid()
-
-    print('Parabéns! Você ganhou.')
