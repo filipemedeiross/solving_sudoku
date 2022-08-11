@@ -7,6 +7,14 @@ class SudokuLogic:
         self.__grid = generator()
         self.__clues = self.identify_clues()  # clue positions in (x, y) coordinates
 
+    def __getitem__(self, args):
+        if isinstance(args, tuple) and len(args) == 2:
+            y, x = args  # coordinates must be passed as for a ndarray
+
+            return self.grid[y, x], self.is_clue(x, y)
+
+        return None
+
     def update(self):
         self.__grid = generator()
         self.__clues = self.identify_clues()
@@ -42,6 +50,10 @@ class SudokuLogic:
     @property
     def clues(self):
         return self.__clues
+
+    @property
+    def grid_clues(self):
+        return [self.__getitem__((y, x)) for y in range(N) for x in range(N)]
 
     @property
     def won(self):
