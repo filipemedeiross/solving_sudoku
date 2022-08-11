@@ -1,7 +1,7 @@
 import pygame
 from .constants import *
 from webbrowser import open
-from .utils import N, flatten_position, available_pos, available_nums
+from .utils import N, flatten_position
 from .logic_game import SudokuLogic
 
 
@@ -122,10 +122,7 @@ class Sudoku:
                         return
 
                     elif self.button_refresh_rect.collidepoint(event.pos):
-                        selected = 0
-
                         self.sudoku.update()  # update the grid
-                        self.display_grid()
 
                         time = 0  # auxiliary variables
                         self.clock.tick()  # update the clock
