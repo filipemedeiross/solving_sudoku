@@ -8,6 +8,8 @@ from .logic_game import SudokuLogic
 class Sudoku:
     def __init__(self):
         self.__sudoku = SudokuLogic()
+        self.__moves = []
+        self.__solution = None  # initialized by clicking the solve button
 
         pygame.init()  # initializing pygame
 
@@ -56,10 +58,20 @@ class Sudoku:
         self.button_refresh_rect = self.button_refresh.get_rect(topleft=(self.button_return_rect.right + spacing_blocks,
                                                                          self.button_return_rect.top))
 
+        self.button_rewind = pygame.transform.scale(pygame.image.load('sudoku/media/rewind.png'),
+                                                    (button_height, button_height))
+        self.button_rewind_rect = self.button_rewind.get_rect(topleft=(self.button_refresh_rect.right + spacing_blocks,
+                                                                       self.button_refresh_rect.top))
+
+        self.button_unmake = pygame.transform.scale(pygame.image.load('sudoku/media/unmake.png'),
+                                                    (button_height, button_height))
+        self.button_unmake_rect = self.button_unmake.get_rect(topleft=(self.button_rewind_rect.right + spacing_blocks,
+                                                                       self.button_rewind_rect.top))
+
         self.button_solve = pygame.transform.scale(pygame.image.load('sudoku/media/solve.png'),
                                                    (button_height, button_height))
-        self.button_solve_rect = self.button_solve.get_rect(topleft=(self.button_refresh_rect.right + spacing_blocks,
-                                                                     self.button_refresh_rect.top))
+        self.button_solve_rect = self.button_solve.get_rect(topleft=(self.button_unmake_rect.right + spacing_blocks,
+                                                                     self.button_unmake_rect.top))
 
         self.button_win = pygame.transform.scale(pygame.image.load('sudoku/media/win.png'),
                                                  (N * block_size + (N-1) * spacing_blocks,
@@ -102,11 +114,15 @@ class Sudoku:
         time = 0
         selected = 0
 
+        self.clock.tick()  # update the clock
+
         # Displaying fixed screen elements
         self.screen.blit(self.background, (0, 0))  # overriding home screen buttons
 
         self.screen.blit(self.button_return, self.button_return_rect)
         self.screen.blit(self.button_refresh, self.button_refresh_rect)
+        self.screen.blit(self.button_rewind, self.button_rewind_rect)
+        self.screen.blit(self.button_unmake, self.button_unmake_rect)
         self.screen.blit(self.button_solve, self.button_solve_rect)
 
         self.display_grid()
@@ -116,13 +132,13 @@ class Sudoku:
                 if event.type == pygame.QUIT:
                     exit(0)
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_return_rect.collidepoint(event.pos):
-                        self.sudoku.update()  # update the grid
+                        self.update()  # update the grid
                         return
 
                     elif self.button_refresh_rect.collidepoint(event.pos):
-                        self.sudoku.update()  # update the grid
+                        self.update()
 
                         time = 0  # auxiliary variables
                         self.clock.tick()  # update the clock
@@ -130,7 +146,22 @@ class Sudoku:
                         continue
 
                 if not self.sudoku.won:
-                    if event.type == pygame.KEYDOWN:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if self.button_rewind_rect.collidepoint(event.pos):
+                            self.sudoku.clear_grid()  # clear the grid
+
+                            self.__moves = []  # reset moves
+
+                        elif self.button_unmake_rect.collidepoint(event.pos):
+                            if self.__moves:
+                                unmake_move = self.__moves.pop()
+
+                                self.sudoku.clear(*flatten_position(unmake_move))
+
+                        elif self.button_solve_rect.collidepoint(event.pos):
+                            pass
+
+                    elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_UP and selected > 8:
                             selected -= 9
                         elif event.key == pygame.K_DOWN and selected < 72:
@@ -143,6 +174,8 @@ class Sudoku:
                             self.sudoku.clear(*flatten_position(selected))
                         elif self.actions(event.key):
                             self.sudoku.insert(*flatten_position(selected), self.actions(event.key))
+
+                            self.__moves.append(selected)  # recording movement performed
 
                             if self.sudoku.won:  # verified win only after valid input
                                 self.screen.blit(self.button_win, self.button_win_rect)
@@ -186,6 +219,13 @@ class Sudoku:
                                time_text.get_width() + 2 * slip_font,
                                time_text.get_height() + 2 * slip_font))
         self.screen.blit(time_text, (left, top))
+
+    def update(self):
+        self.sudoku.update()  # update the grid
+
+        # Reset moves and solution
+        self.__moves = []
+        self.__solution = None
 
     @staticmethod
     def actions(event):
