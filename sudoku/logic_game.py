@@ -1,11 +1,13 @@
 import numpy as np
-from .utils import N, objective_grid, generator
+from .utils import N, objective_grid
+from .generators import generator
 
 
 class SudokuLogic:
     def __init__(self):  # creates a new valid sudoku and saves the initially filled positions
         self.__grid = generator()
         self.__clues = self.identify_clues()  # clue positions in (x, y) coordinates
+        self.__moves = []
 
     def __getitem__(self, args):
         if isinstance(args, tuple) and len(args) == 2:
@@ -16,8 +18,7 @@ class SudokuLogic:
         return None
 
     def update(self):
-        self.__grid = generator()
-        self.__clues = self.identify_clues()
+        self.__init__()
 
     def identify_clues(self):
         return [(x_clue, y_clue) for y_clue, x_clue in zip(*np.where(self.grid != 0))]
@@ -25,6 +26,11 @@ class SudokuLogic:
     def insert(self, x, y, number):
         if not self.is_clue(x, y) and 0 <= x < N and 0 <= y < N and 0 < number <= N:
             self.__grid[y, x] = number
+
+            if (x, y) in self.__moves:
+                self.__moves.remove((x, y))
+            self.__moves.append((x, y))  # recording movement performed
+
             return x, y  # if the operation is successful returns the changed position
 
         return None
@@ -32,6 +38,10 @@ class SudokuLogic:
     def clear(self, x, y):
         if not self.is_clue(x, y):
             self.__grid[y, x] = 0
+
+            if (x, y) in self.__moves:
+                self.__moves.remove((x, y))
+
             return x, y  # if the operation is successful returns the changed position
 
         return None
@@ -39,6 +49,16 @@ class SudokuLogic:
     def clear_grid(self):
         for y, x in zip(*np.where(self.grid)):
             self.clear(x, y)
+
+    def unmake(self):
+        if self.__moves:
+            unmake_move = self.__moves[-1]
+
+            self.clear(*unmake_move)
+
+            return unmake_move
+
+        return None
 
     def is_clue(self, x, y):
         return (x, y) in self.clues

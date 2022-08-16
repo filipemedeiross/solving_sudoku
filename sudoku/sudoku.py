@@ -8,7 +8,6 @@ from .logic_game import SudokuLogic
 class Sudoku:
     def __init__(self):
         self.__sudoku = SudokuLogic()
-        self.__moves = []
         self.__solution = None  # initialized by clicking the solve button
 
         pygame.init()  # initializing pygame
@@ -23,11 +22,11 @@ class Sudoku:
         self.clock = pygame.time.Clock()
 
         # Defining the Rects that will place the blocks on the screen
-        self.rects = [pygame.Rect(grid_left + (block_size + spacing_blocks) * j,
-                                  grid_top + (block_size + spacing_blocks) * i,
+        self.rects = [pygame.Rect(grid_left + (block_size + spacing_blocks) * i,
+                                  grid_top + (block_size + spacing_blocks) * j,
                                   block_size, block_size)
-                      for i in range(N)
-                      for j in range(N)]
+                      for j in range(N)
+                      for i in range(N)]
 
         # Loading images used in the game
         self.background = pygame.transform.scale(pygame.image.load('sudoku/media/background.jpg'), size)
@@ -125,8 +124,6 @@ class Sudoku:
         self.screen.blit(self.button_unmake, self.button_unmake_rect)
         self.screen.blit(self.button_solve, self.button_solve_rect)
 
-        self.display_grid()
-
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -150,13 +147,8 @@ class Sudoku:
                         if self.button_rewind_rect.collidepoint(event.pos):
                             self.sudoku.clear_grid()  # clear the grid
 
-                            self.__moves = []  # reset moves
-
                         elif self.button_unmake_rect.collidepoint(event.pos):
-                            if self.__moves:
-                                unmake_move = self.__moves.pop()
-
-                                self.sudoku.clear(*flatten_position(unmake_move))
+                            self.sudoku.unmake()
 
                         elif self.button_solve_rect.collidepoint(event.pos):
                             pass
@@ -175,17 +167,13 @@ class Sudoku:
                         elif self.actions(event.key):
                             self.sudoku.insert(*flatten_position(selected), self.actions(event.key))
 
-                            self.__moves.append(selected)  # recording movement performed
-
                             if self.sudoku.won:  # verified win only after valid input
+                                self.display_grid()
                                 self.screen.blit(self.button_win, self.button_win_rect)
 
             if not self.sudoku.won:
                 self.display_grid()
-
-                pygame.draw.rect(self.screen, COLOR_SELECT, self.rects[selected],
-                                 2 if self.sudoku.grid[flatten_position(selected, inverted=True)] else 0,
-                                 border_radius=3)
+                self.display_selected(selected)
 
                 # Game time
                 time += self.clock.tick(10)
@@ -208,6 +196,11 @@ class Sudoku:
             if num:
                 self.screen.blit(self.grid[num - 1] if clue else self.grid_alpha[num - 1], rect)
 
+    def display_selected(self, selected):
+        pygame.draw.rect(self.screen, COLOR_SELECT, self.rects[selected],
+                         2 if self.sudoku.grid[flatten_position(selected, inverted=True)] else 0,
+                         border_radius=3)
+
     def display_time(self, time):
         time_text = self.font.render(f'{time // 1000 // 60}:{time // 1000 % 60}', True, COLOR_FONT)
 
@@ -223,9 +216,7 @@ class Sudoku:
     def update(self):
         self.sudoku.update()  # update the grid
 
-        # Reset moves and solution
-        self.__moves = []
-        self.__solution = None
+        self.__solution = None  # reset solution
 
     @staticmethod
     def actions(event):
@@ -242,9 +233,3 @@ class Sudoku:
     @property
     def sudoku(self):
         return self.__sudoku
-
-
-if __name__ == '__main__':
-    game = Sudoku()
-
-    game.init_game()

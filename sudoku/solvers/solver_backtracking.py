@@ -1,5 +1,5 @@
 import numpy as np
-from .problem_formulation import objective_grid, available_pos, available_nums
+from ..utils import objective_grid, available_pos, available_nums
 
 
 def solver_backtracking(sudoku_grid):
@@ -43,7 +43,6 @@ def solver_backtracking(sudoku_grid):
         # there are actions available for the current tree level
         x, y = available_pos(grid)[0]
         nums = available_nums(grid, x, y)
-
         num = nums.pop()
 
         grid[y, x] = num

@@ -1,7 +1,7 @@
 import numpy as np
 from random import choice
-from .problem_formulation import N, flatten_position, objective_grid, available_nums
-from .solver_backtracking import solver_backtracking
+from ..utils import N, flatten_position, objective_grid, available_nums
+from ..solvers import solver_backtracking
 
 
 # Returns a new sudoku game grid
@@ -23,6 +23,7 @@ def generator(difficulty=41):  # the difficulty parameter represents the number 
             size -= 1
 
             while not actions[size]:  # undoing each modification to generate the next successor
+                # It is not necessary to check if size == 0, as it will always be possible to generate a valid grid
                 grid[flatten_position(size, inverted=True)] = 0
                 size -= 1
 
