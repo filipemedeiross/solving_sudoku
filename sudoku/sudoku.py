@@ -1,14 +1,16 @@
 import pygame
 from .constants import *
 from webbrowser import open
-from .utils import N, flatten_position
 from .logic_game import SudokuLogic
+from .utils import N, flatten_position
+from .solvers import solver_backtracking_for_csp
 
 
 class Sudoku:
     def __init__(self):
         self.__sudoku = SudokuLogic()
-        self.__solution = None  # initialized by clicking the solve button
+        self.__solution = solver_backtracking_for_csp(self.sudoku.grid)
+        self.__show_solution = False  # initialized by clicking the solve button
 
         pygame.init()  # initializing pygame
 
@@ -151,7 +153,7 @@ class Sudoku:
                             self.sudoku.unmake()
 
                         elif self.button_solve_rect.collidepoint(event.pos):
-                            pass
+                            self.__show_solution = not self.__show_solution
 
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_UP and selected > 8:
@@ -197,7 +199,7 @@ class Sudoku:
                 self.screen.blit(self.grid[num - 1] if clue else self.grid_alpha[num - 1], rect)
 
     def display_selected(self, selected):
-        pygame.draw.rect(self.screen, COLOR_SELECT, self.rects[selected],
+        pygame.draw.rect(self.screen, self.color_block(selected), self.rects[selected],
                          2 if self.sudoku.grid[flatten_position(selected, inverted=True)] else 0,
                          border_radius=3)
 
@@ -216,7 +218,8 @@ class Sudoku:
     def update(self):
         self.sudoku.update()  # update the grid
 
-        self.__solution = None  # reset solution
+        self.__solution = solver_backtracking_for_csp(self.sudoku.grid)  # reset solution
+        self.__show_solution = False
 
     @staticmethod
     def actions(event):
@@ -229,6 +232,15 @@ class Sudoku:
                 pygame.K_KP7: 7,
                 pygame.K_KP8: 8,
                 pygame.K_KP9: 9}.get(event)
+
+    def color_block(self, selected):
+        color = COLOR_SELECT
+
+        coords = flatten_position(selected, inverted=True)
+        if self.__show_solution and self.sudoku.grid[coords]:
+            color = COLOR_GREEN if self.sudoku.grid[coords] == self.__solution[coords] else COLOR_RED
+
+        return color
 
     @property
     def sudoku(self):

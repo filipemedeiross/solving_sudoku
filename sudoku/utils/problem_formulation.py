@@ -15,6 +15,12 @@ def flatten_position(flat_pos, inverted=False):
         return flat_pos % N, flat_pos // N  # return (x, y)
 
 
+def square_loc(pos):  # pos corresponds to x or y
+    pos_square = pos // STEP * STEP
+
+    return pos_square, pos_square + STEP
+
+
 def satisfies_constraints(grid_slice):  # the slice is flattened before sorting
     return np.array_equal(np.sort(grid_slice, axis=None), np.arange(1, N + 1))
 
@@ -49,10 +55,9 @@ def objective_grid(grid):
 
 
 def number_constraint(grid, x, y, num):
-    xx = x // STEP * STEP
-    yy = y // STEP * STEP
-
-    return num not in np.concatenate((grid[y], grid[:, x], grid[yy: yy + STEP, xx: xx + STEP].flatten()))
+    return num not in np.concatenate((grid[y],
+                                      grid[:, x],
+                                      grid[slice(*square_loc(y)), slice(*square_loc(x))].flatten()))
 
 
 def available_pos(grid):

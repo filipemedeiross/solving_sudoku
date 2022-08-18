@@ -5,6 +5,8 @@
 COLOR_LINE = 0, 0, 0  # black color
 COLOR_FONT = 255, 255, 255  # white color
 COLOR_SELECT = 200, 200,  255
+COLOR_GREEN = 0, 255, 0
+COLOR_RED = 255, 0, 0
 
 # Display dimensions
 size = width, height = 320, 480
