@@ -18,9 +18,73 @@ When starting the game, it displays the time count while allowing the user to co
 
 When you win the game, time is paused and interaction with the sudoku grid and related functions is disabled. The function to return to the home screen and load a new game remains active.
 
-## Search Strategies
+## Modeling Sudoku with Integer Programming
 
-The game interface has the option to mark the fillings performed as right or wrong. The solution is loaded with each new instance of the game through a different solver than the one used in the sudoku generator, which performs a pre-processing that uses the propagation of inferences through a simple node consistency and the AC-3 algorithm and the search with backtracking to csp.
+Entry:
+
+$$
+I=\set{0, 1, \ldots, 8}
+$$
+
+$$
+J=\set{0, 1, \ldots, 8}
+$$
+
+$$
+K=\set{1, 2, \ldots, 9}
+$$
+
+$$
+C= \set{(i, j, k), \ldots },   i \in I, j \in J, k \in K
+$$
+
+Decision Variables: represents whether row i column j is filled with the value k.
+
+$$
+x_{ijk},   i \in I, j \in J, k \in K
+$$
+
+Objective Function:
+
+$$
+Min \space {Z=0}
+$$
+
+Subject to:
+
+$$
+\sum\limits_{k=1}^{9}x_{ijk}=1,   \forall i \in I, \forall j \in J
+$$
+
+$$
+x_{ijk} = 1,   \forall (i, j, k) \in C, k>0
+$$
+
+$$
+\sum\limits_{j=0}^{8}x_{ijk}=1,   \forall i \in I, \forall k \in K
+$$
+
+$$
+\sum\limits_{i=0}^{8}x_{ijk}=1,   \forall j \in J, \forall k \in K
+$$
+
+$$
+\sum\limits_{i=m}^{m+2}\sum\limits_{j=n}^{n+2}x_{ijk}=1,   m \in \set{0, 3, 6}, n \in \set{0, 3, 6}, \forall k \in K
+$$
+
+$$
+x_{ijk} \in \set{0, 1}, \forall i \in I, \forall j \in J, \forall k \in K
+$$
+
+## Solvers Benchmark
+
+The solvers benchmark can be seen from `tests/solvers_benchmarks.ipynb` and tested regular backtracking, search for constraint satisfaction problems, and integer linear programming. It was observed that the regular search method with backtracking is very efficient for easier sudoku instances, however it becomes unfeasible to solve more complex instances because the execution time increases considerably.
+
+Besides solving sudoku through integer linear programming has shown to be a good option, the search method for constraint satisfaction problems proves to be the most suitable. In this search strategy, the resolution time remains below two tenths of a second for the most difficult instance in the game.
+
+## Resolution Strategy Implemented in the Game
+
+The game interface has the option to mark the fillings performed as right or wrong. The solution is loaded with each new instance of the game through a different solver than the one used in the sudoku generator, which performs a pre-processing that uses the propagation of inferences through a simple node consistency and the AC-3 algorithm and the search with backtracking to csp (contained in the `solver_backtracking_for_csp.py` submodule of the `solvers` subpackage).
 
 The AllDifferent constraints are transformed into binary constraints to allow the application of the AC-3 algorithm, which in most cases is sufficient to reduce the domains of the variables to 1 and find the solution, in which case the backtracking search for csp only assigns the NxN variables once (with N=9).
 
@@ -42,6 +106,7 @@ sudoku/                                      Top-level package
               __init__.py
               solver_backtracking.py         Solver using regular search strategy with backtracking
               solver_backtracking_for_csp.py Solver using backtracking search strategy for csp
+              solver_ip.py                   Solver using integer programming
       utils/                                 Too many features that do not fit in the above subpackages
               __init__.py
               problem_formulation.py         Auxiliary functions to implement game logic
