@@ -101,7 +101,7 @@ sudoku/                                      Top-level package
               ...
       generators/                            Can be extended with different sudoku generators
               __init__.py
-              generator.py                   Implements de sudoku generator
+              generator.py                   Implements the sudoku generator
       solvers/                               Collect sudoku solvers        
               __init__.py
               solver_backtracking.py         Solver using regular search strategy with backtracking
