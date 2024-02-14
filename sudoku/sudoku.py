@@ -193,6 +193,13 @@ class Sudoku:
         pygame.draw.line(self.screen, COLOR_LINE, self.rects[18].bottomleft, self.rects[26].bottomright, spacing_blocks)
         pygame.draw.line(self.screen, COLOR_LINE, self.rects[45].bottomleft, self.rects[53].bottomright, spacing_blocks)
 
+        pygame.draw.rect(self.screen, COLOR_LINE,
+                         (self.rects[0].left - spacing_blocks * 4,
+                          self.rects[0].top - spacing_blocks * 4,
+                          self.rects[8].right - self.rects[0].left + spacing_blocks * 8,
+                          self.rects[72].bottom - self.rects[0].top + spacing_blocks * 8),
+                         width=spacing_blocks * 4, border_radius=10)
+
         # Displaying fixed screen elements
         for num, clue, rect in zip(*zip(*self.sudoku.grid_clues), self.rects):
             if num:

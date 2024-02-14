@@ -2,7 +2,7 @@
 
 
 # Colors in RGB
-COLOR_LINE = 0, 0, 0  # black color
+COLOR_LINE = 218, 112, 214  # black color
 COLOR_FONT = 255, 255, 255  # white color
 COLOR_SELECT = 200, 200,  255
 COLOR_GREEN = 0, 255, 0
