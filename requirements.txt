@@ -1,5 +1,5 @@
 cffi==1.15.1
-mip==1.14.0
-numpy==1.23.1
+mip==1.15.0
+numpy==1.26.4
 pycparser==2.21
-pygame==2.1.2
+pygame==2.5.2
