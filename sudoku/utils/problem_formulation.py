@@ -1,29 +1,35 @@
-# For better documentation see tests/sudoku_generator.ipynb
-
-
 import numpy as np
+from .constants import N, STEP, V
 
 
-N = 9  # number of grid rows and columns
-STEP = 3  # defines the side of the quadrant
-
-
-def flatten_position(flat_pos, inverted=False):
-    if inverted:  # facilitates ndarray manipulation
-        return flat_pos // N, flat_pos % N  # return (y, x)
+def flatten_position(pos, inv=False):
+    if inv:
+        return pos // N, pos % N  # (y, x)
     else:
-        return flat_pos % N, flat_pos // N  # return (x, y)
+        return pos % N, pos // N  # (x, y)
 
+def square_loc(p):
+    """
+    This function delimits the square grid in which a certain position is located
+    
+    :param pos:
+    x or y position of a specific location
+    
+    :return ([x, y]_initial, [x, y]_final):
+    Tuple containing the initial and final coordinates of the square,
+    on the axis specified by the parameter
+    """
+    pos = p // STEP * STEP
 
-def square_loc(pos):  # pos corresponds to x or y
-    pos_square = pos // STEP * STEP
+    return pos, pos + STEP
 
-    return pos_square, pos_square + STEP
+def number_constraint(grid, x, y, num):
+    return num not in grid[y] and \
+           num not in grid[:, x] and \
+           num not in grid[slice(*square_loc(y)), slice(*square_loc(x))]
 
-
-def satisfies_constraints(grid_slice):  # the slice is flattened before sorting
-    return np.array_equal(np.sort(grid_slice, axis=None), np.arange(1, N + 1))
-
+def satisfies_constraints(grid_slice):
+    return np.array_equal(np.sort(grid_slice), V)
 
 def check_rows(grid):
     for row in grid:
@@ -32,37 +38,32 @@ def check_rows(grid):
 
     return True
 
-
-def check_columns(grid):
-    for column in grid.T:
-        if not satisfies_constraints(column):
+def check_cols(grid):
+    for col in grid.T:
+        if not satisfies_constraints(col):
             return False
 
     return True
 
+def check_sqrs(grid):
+    for y in range(0, N, STEP):
+        for x in range(0, N, STEP):
+            sqr = grid[y : y + STEP, x : x + STEP]
 
-def check_quadrants(grid):
-    for x in range(0, N, STEP):
-        for y in range(0, N, STEP):
-            if not satisfies_constraints(grid[y: y + STEP, x: x + STEP]):
+            if not satisfies_constraints(sqr.flatten()):
                 return False
 
     return True
 
-
 def objective_grid(grid):
-    return check_rows(grid) and check_columns(grid) and check_quadrants(grid)
-
-
-def number_constraint(grid, x, y, num):
-    return num not in np.concatenate((grid[y],
-                                      grid[:, x],
-                                      grid[slice(*square_loc(y)), slice(*square_loc(x))].flatten()))
-
+    return check_rows(grid) and \
+           check_cols(grid) and \
+           check_sqrs(grid)
 
 def available_pos(grid):
     return [(x, y) for y, x in zip(*np.where(grid == 0))]
 
-
 def available_nums(grid, x, y):
-    return [num for num in range(1, N + 1) if number_constraint(grid, x, y, num)]
+    return [num
+            for num in range(1, N + 1)
+            if number_constraint(grid, x, y, num)]
