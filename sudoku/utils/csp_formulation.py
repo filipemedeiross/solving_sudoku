@@ -1,71 +1,107 @@
-# For better documentation see tests/sudoku_solver.ipynb
-
-
 import numpy as np
-from .problem_formulation import N, STEP, square_loc, objective_grid
+from collections import deque
+from .constants import  N
+from .problem_formulation import square_loc, objective_grid
 
 
 class SudokuCSP:
     def __init__(self, grid):
-        self.domains = self.node_consistency(grid)
-
-        self.neighbors = self.generate_neighbors()  # avoid checking each time it is necessary
-
-        # Similar difference constraints, so attribute contains only the scopes
-        self.constraints = [(var, neighbor) for var in self.vars for neighbor in self.neighbors[var]]
-
-        self.cuts = {var: [] for var in self.vars}
-
-    @staticmethod
-    def node_consistency(grid):
-        domains = {(y, x): [grid[y, x]] if grid[y, x] else list(range(1, N + 1))
-                   for y in range(N)
-                   for x in range(N)}
-
-        return domains
-
-    def generate_neighbors(self):
-        neighbors = {(y, x): set([(y, i) for i in range(N) if i != x] +
-                                 [(j, x) for j in range(N) if j != y] +
-                                 [(j, i) for j in range(*square_loc(y)) for i in range(*square_loc(x))
-                                  if i != x and j != y])
-                     for y, x in self.vars}
-
-        return neighbors
+        self.domains     = self.generate_domains(grid)
+        self.neighbors   = self.generate_neighbors()
+        self.constraints = self.generate_constraints()
+        self.cuts        = self.generate_cuts()
 
     def ac_3(self):
-        queue = self.constraints.copy()
+        queue = deque([(xi, xj)
+                       for xi, xj in self.constraints
+                       if self.assigned(xj)])
 
         while queue:
-            xi, xj = queue.pop(0)
+            xi, xj = queue.popleft()
 
             if self.revise(xi, xj):
-                if not self.domains[xi]:
+                if self.assigned(xi):
+                    queue.extend([(xk, xi)
+                                  for xk in self.neighbors[xi] - {xj}])
+                elif self.unfeasible(xi):
                     return False
-
-                for xk in self.neighbors[xi] - {xj}:
-                    queue.append((xk, xi))
 
         return True
 
     def revise(self, xi, xj):
-        revised = False
+        vj = self.domains[xj][0]
 
-        for x in self.domains[xi]:
-            if not any([x != y for y in self.domains[xj]]):
-                self.domains[xi].remove(x)
+        for vi in self.domains[xi]:
+            if vi == vj:
+                self.domains[xi].remove(vi)
+                return True
 
-                revised = True
+        return False
 
-        return revised
+    def generate_domains(self, grid):
+        return {(y, x) : self.get_domain(grid, y, x)
+                for y in range(N)
+                for x in range(N)}
+
+    def generate_neighbors(self):
+        return {pos : self.get_neighbors(*pos)
+                for pos in self.vars}
+
+    def generate_constraints(self):
+        return [(v, n)
+                for v in self.vars
+                for n in self.neighbors[v]]
+
+    def generate_cuts(self):
+        return {v : []
+                for v in self.vars}
+
+    @staticmethod
+    def get_domain(grid, y, x):
+        return [grid[y, x]] if grid[y, x] else list(range(1, N+1))
+
+    @staticmethod
+    def get_row(y, x):
+        return [(y, i)
+                for i in range(N)
+                if i != x]
+
+    @staticmethod
+    def get_col(y, x):
+        return [(j, x)
+                for j in range(N)
+                if j != y]
+
+    @staticmethod
+    def get_sqr(y, x):
+        return [(j, i)
+                for j in range(*square_loc(y))
+                for i in range(*square_loc(x))
+                if j != y and i != x]
+
+    def get_neighbors(self, y, x):
+        return set(self.get_row(y, x) +
+                   self.get_col(y, x) +
+                   self.get_sqr(y, x))
+
+    def unfeasible(self, xi):
+        return len(self.domains[xi]) == 0
+
+    def assigned(self, xi):
+        return len(self.domains[xi]) == 1
 
     @property
     def vars(self):
-        return list(self.domains.keys())
+        return self.domains.keys()
 
     @property
     def won(self):
-        if all(len(domain) == 1 for domain in self.domains.values()):
-            return objective_grid(np.array([domain[0] for domain in self.domains.values()]).reshape((N, N)))
+        grid = np.zeros((N, N), dtype='int8')
 
-        return False
+        for pos, domain in self.domains.items():
+            if len(domain) > 1:
+                return False
+
+            grid[pos] = domain[0]
+
+        return objective_grid(grid)
