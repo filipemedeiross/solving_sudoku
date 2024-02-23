@@ -60,6 +60,14 @@ def objective_grid(grid):
            check_cols(grid) and \
            check_sqrs(grid)
 
+def first_available_pos(grid):
+    for y in range(N):
+        for x in range(N):
+            if not grid[y, x]:
+                return y, x
+
+    return None
+
 def available_pos(grid):
     return [(x, y) for y, x in zip(*np.where(grid == 0))]
 
