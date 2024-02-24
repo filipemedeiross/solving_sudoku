@@ -2,7 +2,7 @@ import numpy as np
 from ..utils import objective_grid, first_available_pos, available_nums
 
 
-def exhaustive_search(sudoku_grid):
+def solver_exhaustive(sudoku_grid):
     grid = sudoku_grid.copy()
     step = np.count_nonzero(grid == 0)
 
