@@ -21,15 +21,9 @@ def unassign(assignment, csp, var):
     csp.cuts[var].clear()
 
 def assignment_in_grid(assignment):
-    if not assignment:
-        return assignment
-
-    grid = np.zeros((N, N), dtype='int8')
-
-    for pos, value in assignment.items():
-        grid[pos] = value
-
-    return grid
+    return np.array([[assignment[y, x]
+                      for x in range(N)]
+                      for y in range(N)], dtype='int8')
 
 def process_grid(grid):
     return [(j, i, grid[j, i])

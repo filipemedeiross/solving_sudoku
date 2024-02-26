@@ -1,5 +1,5 @@
 import numpy as np
-from .constants import N, STEP, V
+from .constants import N, STEP, V, SQR
 
 
 def flatten_position(pos, inv=False):
@@ -19,9 +19,7 @@ def square_loc(p):
     Tuple containing the initial and final coordinates of the square,
     on the axis specified by the parameter
     """
-    pos = p // STEP * STEP
-
-    return pos, pos + STEP
+    return SQR[p]
 
 def number_constraint(grid, x, y, num):
     return num not in grid[y] and \
