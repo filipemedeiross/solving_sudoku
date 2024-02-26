@@ -1,4 +1,4 @@
-# Defining game constants
+from pygame.locals import *
 
 
 # Settings
@@ -20,6 +20,16 @@ NUMBER_PATH = [f'sudoku/media/number_0{i}.png'
                for i in range(1, N + 1)]
 ALPHAS_PATH = [f'sudoku/media/number_alpha_0{i}.png'
                for i in range(1, N + 1)]
+
+ACTIONS =  {K_KP1: 1,
+            K_KP2: 2,
+            K_KP3: 3,
+            K_KP4: 4,
+            K_KP5: 5,
+            K_KP6: 6,
+            K_KP7: 7,
+            K_KP8: 8,
+            K_KP9: 9}
 
 # Colors in RGB
 COLOR_FONT   = 255, 255, 255
