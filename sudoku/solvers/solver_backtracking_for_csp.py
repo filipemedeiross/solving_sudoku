@@ -27,12 +27,13 @@ def backtrack(assignment, csp, vars):
 
     return None
 
-def solver_backtracking_for_csp(sudoku_grid):
-    # Grid preprocessing
-    csp = SudokuCSP(sudoku_grid)
+def solver_csp(csp):
     csp.ac_3()
 
     assg = backtracking_search(csp)
     grid = assignment_in_grid(assg)
 
     return grid
+
+def solver_backtracking_for_csp(sudoku_grid):
+    return solver_csp(SudokuCSP(sudoku_grid))
