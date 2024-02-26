@@ -1,67 +1,68 @@
 import numpy as np
-from .utils import N, objective_grid
 from .generators import generator
+from .utils import N, objective_grid
 
 
 class SudokuLogic:
-    def __init__(self):  # creates a new valid sudoku and saves the initially filled positions
-        self.__grid = generator()
-        self.__clues = self.identify_clues()  # clue positions in (x, y) coordinates
+    # Creates a new valid sudoku and saves the initially filled positions
+    def __init__(self):
+        self.__grid  = generator()
+        self.__clues = self.identify_clues()
         self.__moves = []
 
     def __getitem__(self, args):
         if isinstance(args, tuple) and len(args) == 2:
-            y, x = args  # coordinates must be passed as for a ndarray
+            y, x = args
 
-            return self.grid[y, x], self.is_clue(x, y)
-
-        return None
+            return self.grid_clue(x, y)
 
     def update(self):
         self.__init__()
 
     def identify_clues(self):
-        return [(x_clue, y_clue) for y_clue, x_clue in zip(*np.where(self.grid != 0))]
+        return [(x, y)
+                for y, x in zip(*np.where(self.grid))]
 
     def insert(self, x, y, number):
-        if not self.is_clue(x, y) and 0 <= x < N and 0 <= y < N and 0 < number <= N:
+        if self.is_valid_attr(x, y, number):
             self.__grid[y, x] = number
 
-            if (x, y) in self.__moves:
+            if self.is_move(x, y):
                 self.__moves.remove((x, y))
-            self.__moves.append((x, y))  # recording movement performed
+            self.__moves.append((x, y))
 
-            return x, y  # if the operation is successful returns the changed position
+            return x, y
 
-        return None
+    def unmake(self):
+        if self.__moves:
+            return self.clear(*self.__moves.pop())
 
     def clear(self, x, y):
         if not self.is_clue(x, y):
             self.__grid[y, x] = 0
 
-            if (x, y) in self.__moves:
-                self.__moves.remove((x, y))
-
-            return x, y  # if the operation is successful returns the changed position
-
-        return None
+            return x, y
 
     def clear_grid(self):
-        for y, x in zip(*np.where(self.grid)):
+        pos = np.where(self.grid)
+
+        for y, x in zip(*pos):
             self.clear(x, y)
-
-    def unmake(self):
-        if self.__moves:
-            unmake_move = self.__moves[-1]
-
-            self.clear(*unmake_move)
-
-            return unmake_move
-
-        return None
 
     def is_clue(self, x, y):
         return (x, y) in self.clues
+
+    def is_valid_attr(self, x, y, n):
+        return not self.is_clue(x, y) and \
+               0 <= x <= N-1 and \
+               0 <= y <= N-1 and \
+               1 <= n <= N
+
+    def is_move(self, x, y):
+        return (x, y) in self.moves
+    
+    def grid_clue(self, x, y):
+        return self.grid[y, x], self.is_clue(x, y)
 
     @property
     def grid(self):
@@ -73,7 +74,13 @@ class SudokuLogic:
 
     @property
     def grid_clues(self):
-        return [self.__getitem__((y, x)) for y in range(N) for x in range(N)]
+        return [self.grid_clue(x, y)
+                for y in range(N)
+                for x in range(N)]
+
+    @property
+    def moves(self):
+        return self.__moves
 
     @property
     def won(self):
