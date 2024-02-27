@@ -6,10 +6,11 @@ N = 9
 
 FONT_TYPE = 'tlwgtypo'
 
-BG_PATH      = 'sudoku/media/background.jpg'
+BG_PATH      = 'sudoku/media/bg.jpg'
 WIN_PATH     = 'sudoku/media/win.png'
 PLAY_PATH    = 'sudoku/media/play.png'
 INFO_PATH    = 'sudoku/media/info.png'
+EMPTY_PATH   = 'sudoku/media/empty.png'
 SOLVE_PATH   = 'sudoku/media/solve.png'
 RETURN_PATH  = 'sudoku/media/return.png'
 REWIND_PATH  = 'sudoku/media/rewind.png'
@@ -46,18 +47,17 @@ G_TOP    = HGHT // 5.5
 G_LEFT   = 20
 BP_TOP   = 400
 BP_LEFT  = 2 * G_LEFT
-BI_BOTT  = G_TOP - 15
 BI_RIGHT = WDTH - G_LEFT
 
 # Spacing
 SPC_BU = 30
 SPC_BL = 2
-SLIP_FONT = 5
 
 # Dimensions of screen elements
-FONT_SIZE = 20
+FONT_SIZE = 25
 BL_SIZE   = (WDTH - 2 * G_LEFT - 8 * SPC_BL) / N
 BU_SIZE   = BU_WDTH, BU_HGHT = WDTH - 4 * G_LEFT, SPC_BU
 BH_SIZE   = BU_HGHT, BU_HGHT
+EMPT_SIZE = BU_WDTH // 3, BU_HGHT
 WIN_SIZE  = N * BL_SIZE + (N - 1) * SPC_BL, \
             N * BL_SIZE + (N - 1) * SPC_BL
