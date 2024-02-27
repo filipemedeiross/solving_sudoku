@@ -22,15 +22,19 @@ NUMBER_PATH = [f'sudoku/media/number_0{i}.png'
 ALPHAS_PATH = [f'sudoku/media/number_alpha_0{i}.png'
                for i in range(1, N + 1)]
 
-ACTIONS =  {K_KP1: 1,
-            K_KP2: 2,
-            K_KP3: 3,
-            K_KP4: 4,
-            K_KP5: 5,
-            K_KP6: 6,
-            K_KP7: 7,
-            K_KP8: 8,
-            K_KP9: 9}
+ACTIONS = {K_KP1: 1,
+           K_KP2: 2,
+           K_KP3: 3,
+           K_KP4: 4,
+           K_KP5: 5,
+           K_KP6: 6,
+           K_KP7: 7,
+           K_KP8: 8,
+           K_KP9: 9}
+MOVES = {K_UP    : lambda s: (      s >  8, -9),
+         K_LEFT  : lambda s: (      s %  N, -1),
+         K_DOWN  : lambda s: (      s < 72,  9),
+         K_RIGHT : lambda s: ((s + 1) %  N,  1)}
 
 # Colors in RGB
 COLOR_FONT   = 255, 255, 255
