@@ -41,6 +41,9 @@ class SudokuLogic:
         if not self.is_clue(x, y):
             self.__grid[y, x] = 0
 
+            if self.is_move(x, y):
+                self.__moves.remove((x, y))
+
             return x, y
 
     def clear_grid(self):
