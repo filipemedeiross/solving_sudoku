@@ -1,22 +1,39 @@
-<h1>SOLVING SUDOKU BY SEARCH FOR CSP</h1>
+<h1>SOLVING SUDOKU USING CSP SEARCH</h1>
+
+## Introduction
+
+This project is the second in a series of projects in which simple games will be developed using the pygame library, and these games will be conquered using machine learning algorithms and artificial intelligence in general.
+
+The motivation behind this approach lies in frequent situations where certain evaluation metrics, when applied to specific algorithms, prove to be inaccurate and obscure their true practical significance. In extreme cases, algorithms with poor performance may be inaccurately assessed positively by specific metrics that, in practice, do not reflect their true effectiveness and distort their evaluation. When developing algorithms to win games, we have two main evaluation metrics that are simple and have empirical significance:
+
+1. Whether the algorithm won or not.
+2. If it won, how efficient its performance was.
 
 ## Implementing the Sudoku
 
-The sudoku was implemented using the numpy library for the game logic and the pygame library for the interface. The sudoku grid is generated in an automated way through the search strategy with backtracking that initially fills it completely and later clears the positions checking through a solver, which also uses regular search with backtracking, if the sudoku remains with a unique solution (by default 41 clues are displayed and the class with the initial grid does not contain the game instance response).
+The sudoku implementation utilizes the numpy library for game logic and the pygame library for the interface. The sudoku grid is dynamically generated through a search strategy with backtracking and randomization. Initially, the grid is fully populated, after which positions are iteratively cleared using a solver (this solver employs an exhaustive search with backtracking, ensuring that the sudoku puzzle maintains a unique solution).
 
-The game has three screens explained below:
+This search strategy employs a trial-and-error approach, akin to brute force. When encountering unresolved configurations with no further valid movement options, the search backtracks until it discovers a valid path, avoiding revisitation of previously explored paths. By default, 41 clues are displayed, and the initial grid class does not contain the game instance response.
 
-![Home Screen](https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp/blob/main/examples/home_screen.jpeg?raw=true)
+The game features three distinct screens:
 
-The home screen displays the sudoku initial grid and the **Play** button that launches the game when clicked. It also has an **i** button that takes you to the creator's github profile.
+<p align="center"> 
+    <img src="https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp/blob/main/examples/home_screen.png?raw=true" width="250" height="400">
+</p>
 
-![Game Screen](https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp/blob/main/examples/game_screen.jpeg?raw=true)
+The home screen showcases the initial sudoku grid and a prominent **Play** button to commence the game. Additionally, it includes an information (**i**) button, directing users to the creator's github profile.
 
-When starting the game, it displays the time count while allowing the user to complete the sudoku. The buttons above, from left to right respectively, allow the user to return to the home screen, load a new game, restart the current game, undo moves in the most recent order, and mark moves as right or wrong.
+<p align="center"> 
+    <img src="https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp/blob/main/examples/game_screen.png?raw=true" width="250" height="400">
+</p>
 
-![Winner Screen](https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp/blob/main/examples/winner_screen.jpeg?raw=true)
+Upon game initiation, the screen displays a timer while enabling users to solve the sudoku puzzle. An array of buttons positioned above the grid facilitates various functions, including navigation back to the home screen, loading a new game, restarting the current game, undoing moves in reverse order, and marking moves as correct or incorrect.
 
-When you win the game, time is paused and interaction with the sudoku grid and related functions is disabled. The function to return to the home screen and load a new game remains active.
+<p align="center"> 
+    <img src="https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp/blob/main/examples/winner_screen.png?raw=true" width="250" height="400">
+</p>
+
+Upon successfully completing the puzzle, the timer halts, and interaction with the sudoku grid and associated functions ceases. However, users can still access options to return to the home screen and load a new game.
 
 ## Modeling Sudoku with Integer Programming
 
@@ -44,7 +61,7 @@ $$
 x_{ijk},   i \in I, j \in J, k \in K
 $$
 
-Objective Function:
+Objective Function: is omitted as it is irrelevant to the problem, since sudoku has a unique solution.
 
 $$
 Min \space {Z=0}
@@ -78,17 +95,25 @@ $$
 
 ## Solvers Benchmark
 
-The solvers benchmark can be seen from `tests/solvers_benchmarks.ipynb` and tested regular backtracking, search for constraint satisfaction problems, and integer linear programming. It was observed that the regular search method with backtracking is very efficient for easier sudoku instances, however it becomes unfeasible to solve more complex instances because the execution time increases considerably.
+The solvers benchmark can be accessed through notebooks/solvers_benchmarks.ipynb, where we evaluated regular backtracking, search for constraint satisfaction problems, and integer linear programming. These solvers were assessed by calculating the average execution time across 20 different instances for each difficulty level. Additionally, we tested them on a puzzle created by finnish mathematician Arto Inkala, renowned as one of the most challenging sudoku puzzles worldwide.
 
-Besides solving sudoku through integer linear programming has shown to be a good option, the search method for constraint satisfaction problems proves to be the most suitable. In this search strategy, the resolution time remains below two tenths of a second for the most difficult instance in the game.
+> **Nota:** On a difficulty scale of 1 to 5 stars, the Inkala instance stands out as exceptionally challenging, earning an impressive 11 stars!
+
+<p align="center"> 
+    <img src="https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp/blob/main/examples/benchmarks.png?raw=true" width="500" height="400">
+</p>
+
+By examining the data, we notice that the conventional search approach with backtracking proves highly efficient for simpler sudoku puzzles. However, it becomes impractical for tackling more intricate puzzles as the execution time significantly escalates.
+
+While solving sudoku via integer linear programming presents a viable alternative, the search method tailored for constraint satisfaction problems emerges as the optimal choice. Under this strategy, the resolution time consistently stays below one tenths of a second even for the most challenging puzzle instances.
 
 ## Resolution Strategy Implemented in the Game
 
-The game interface has the option to mark the fillings performed as right or wrong. The solution is loaded with each new instance of the game through a different solver than the one used in the sudoku generator, which performs a pre-processing that uses the propagation of inferences through a simple node consistency and the AC-3 algorithm and the search with backtracking to csp (contained in the `solver_backtracking_for_csp.py` submodule of the `solvers` subpackage).
+The game interface offers the option to mark filled cells as correct or incorrect. Upon initiating each new game instance, a separate solver is employed, distinct from the one used in the sudoku generator. This solver undergoes a preprocessing phase utilizing inference propagation through simple node consistency. Subsequently, it executes the AC-3 algorithm followed by a search with backtracking to solve the constraint satisfaction problem (CSP), encapsulated within the **solver_backtracking_for_csp.py** submodule of the **solvers** package.
 
-The AllDifferent constraints are transformed into binary constraints to allow the application of the AC-3 algorithm, which in most cases is sufficient to reduce the domains of the variables to 1 and find the solution, in which case the backtracking search for csp only assigns the NxN variables once (with N=9).
+To facilitate the application of the AC-3 algorithm, AllDifferent constraints are converted into binary constraints. This conversion enables the AC-3 algorithm to effectively reduce the domains of the variables, often leading to the discovery of a solution solely through inference propagation (consequently, the backtracking search for CSP only assigns values to the NxN variables once).
 
-When finding the solution, it is stored in a distinct attribute of the game grid.
+Upon successfully finding the solution, it is stored in a dedicated attribute of the game grid.
 
 ## Sudoku Pack Organization
 ```
@@ -104,11 +129,13 @@ sudoku/                                      Top-level package
               generator.py                   Implements the sudoku generator
       solvers/                               Collect sudoku solvers        
               __init__.py
+              solver_ip.py                   Solver using integer programming
+              solver_exhaustive.py           Solver that performs an exhaustive search, used in the instance generator
               solver_backtracking.py         Solver using regular search strategy with backtracking
               solver_backtracking_for_csp.py Solver using backtracking search strategy for csp
-              solver_ip.py                   Solver using integer programming
       utils/                                 Too many features that do not fit in the above subpackages
               __init__.py
+              constants.py
               problem_formulation.py         Auxiliary functions to implement game logic
               heuristics.py                  Implementing the functions that apply the heuristics
               csp_formulation.py             Implementing sudoku formulation as a csp
@@ -155,10 +182,14 @@ Use the following command to run the game:
 ```
 ## References
 
-Norvig, Peter. Inteligência Artificial. Grupo GEN, 2013.
+Stuart Russell and Peter Norvig. **Artificial Intelligence: A Modern Approach**. 3rd ed., Pearson, 2009.
 
-Images used: <https://opengameart.org/>
+Ana Flávia Uzeda dos Santos Macambira. **Programação Linear**. João Pessoa: Editora da UFPB, 2016.
 
 Numpy: <https://numpy.org/doc/stable/>
 
+Python-MIP: <https://docs.python-mip.com/en/latest/index.html>
+
 Pygame: <https://www.pygame.org/docs/>
+
+Images used: <https://opengameart.org/>
