@@ -99,7 +99,7 @@ $$
 
 ## Solvers Benchmark
 
-The solvers benchmark can be accessed through **notebooks/solvers_benchmarks.ipynb**, where we evaluated regular backtracking, search for constraint satisfaction problems, and integer linear programming.
+The solvers benchmark can be accessed through `notebooks/solvers_benchmarks.ipynb`, where we evaluated regular backtracking, search for constraint satisfaction problems, and integer linear programming.
 
 These solvers were assessed by calculating the average execution time across 20 different instances for each difficulty level. Additionally, we tested them on a puzzle created by finnish mathematician Arto Inkala, renowned as one of the most challenging sudoku puzzles worldwide.
 
@@ -115,9 +115,9 @@ While solving sudoku via integer linear programming presents a viable alternativ
 
 ## Resolution Strategy Implemented in the Game
 
-The game interface offers the option to mark filled cells as correct or incorrect. Upon initiating each new game instance, a separate solver is employed, distinct from the one used in the sudoku generator. This solver undergoes a preprocessing phase utilizing inference propagation through simple node consistency. Subsequently, it executes the AC-3 algorithm followed by a search with backtracking to solve the constraint satisfaction problem (CSP), encapsulated within the **solver_backtracking_for_csp.py** submodule of the **solvers** subpackage.
+Upon initiating each new game instance, a separate solver is employed, distinct from the one used in the sudoku generator. This solver undergoes a preprocessing phase utilizing inference propagation through simple node consistency. Subsequently, it executes the AC-3 algorithm followed by a search with backtracking to solve the constraint satisfaction problem (accessed through `solver_backtracking_for_csp.py` submodule of the `solvers` subpackage).
 
-To facilitate the application of the AC-3 algorithm, AllDifferent constraints are converted into binary constraints. This conversion enables the AC-3 algorithm to effectively reduce the domains of the variables, often leading to the discovery of a solution solely through inference propagation (consequently, the backtracking search for CSP only assigns values to the NxN variables once).
+To facilitate the application of the AC-3 algorithm, **AllDifferent** constraints are converted into binary constraints. This conversion enables the AC-3 algorithm to effectively reduce the domains of the variables, often leading to the discovery of a solution solely through inference propagation (consequently, the backtracking search for CSP only assigns values to the NxN variables once).
 
 Upon successfully finding the solution, it is stored in a dedicated attribute of the game grid.
 
