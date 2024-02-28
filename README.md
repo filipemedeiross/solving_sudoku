@@ -99,7 +99,9 @@ $$
 
 ## Solvers Benchmark
 
-The solvers benchmark can be accessed through **notebooks/solvers_benchmarks.ipynb**, where we evaluated regular backtracking, search for constraint satisfaction problems, and integer linear programming. These solvers were assessed by calculating the average execution time across 20 different instances for each difficulty level. Additionally, we tested them on a puzzle created by finnish mathematician Arto Inkala, renowned as one of the most challenging sudoku puzzles worldwide.
+The solvers benchmark can be accessed through **notebooks/solvers_benchmarks.ipynb**, where we evaluated regular backtracking, search for constraint satisfaction problems, and integer linear programming.
+
+These solvers were assessed by calculating the average execution time across 20 different instances for each difficulty level. Additionally, we tested them on a puzzle created by finnish mathematician Arto Inkala, renowned as one of the most challenging sudoku puzzles worldwide.
 
 > **Note:** On a difficulty scale of 1 to 5 stars, the Inkala instance stands out as exceptionally challenging, earning an impressive 11 stars!
 
