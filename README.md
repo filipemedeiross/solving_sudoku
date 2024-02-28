@@ -13,9 +13,11 @@ When developing algorithms to win games, we have two main evaluation metrics tha
 
 ## Implementing the Sudoku
 
-The sudoku implementation utilizes the numpy library for game logic and the pygame library for the interface. The sudoku grid is dynamically generated through a search strategy with backtracking and randomization. Initially, the grid is fully populated, after which positions are iteratively cleared using a solver (this solver employs an exhaustive search with backtracking, ensuring that the sudoku puzzle maintains a unique solution).
+The sudoku implementation utilizes the numpy library for game logic and the pygame library for the interface. The sudoku grid is dynamically generated through a search strategy with backtracking and randomization (by default, 41 clues are displayed, and the initial grid class does not contain the game instance response).
 
-This search strategy employs a trial-and-error approach, akin to brute force. When encountering unresolved configurations with no further valid movement options, the search backtracks until it discovers a valid path, avoiding revisitation of previously explored paths. By default, 41 clues are displayed, and the initial grid class does not contain the game instance response.
+Initially, the grid is fully populated, after which positions are iteratively cleared using a solver (this solver employs an exhaustive search with backtracking, ensuring that the sudoku puzzle maintains a unique solution).
+
+This search strategy employs a trial-and-error approach, akin to brute force. When encountering unresolved configurations with no further valid movement options, the search backtracks until it discovers a valid path, avoiding revisitation of previously explored paths.
 
 The game features three distinct screens:
 
