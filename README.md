@@ -41,7 +41,7 @@ Upon successfully completing the puzzle, the timer halts, and interaction with t
 
 ## Modeling Sudoku with Integer Programming
 
-Entry:
+**Entry**:
 
 $$
 I=\set{0, 1, \ldots, 8}
@@ -59,19 +59,19 @@ $$
 C= \set{(i, j, k), \ldots },   i \in I, j \in J, k \in K
 $$
 
-Decision Variables: represents whether row i column j is filled with the value k.
+**Decision Variables**: represents whether row i column j is filled with the value k.
 
 $$
 x_{ijk},   i \in I, j \in J, k \in K
 $$
 
-Objective Function: is omitted as it is irrelevant to the problem, since sudoku has a unique solution.
+**Objective Function**: is omitted as it is irrelevant to the problem, since sudoku has a unique solution.
 
 $$
 Min \space {Z=0}
 $$
 
-Subject to:
+**Subject to**:
 
 $$
 \sum\limits_{k=1}^{9}x_{ijk}=1,   \forall i \in I, \forall j \in J
