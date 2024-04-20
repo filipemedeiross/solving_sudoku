@@ -154,13 +154,13 @@ Using some Linux distro and make sure you have [Python 3](https://www.python.org
 Clone the project:
 
 ```bash
-  git clone https://github.com/filipemedeiross/solving_sudoku_by_search_for_csp.git
+  git clone https://github.com/filipemedeiross/solving_sudoku.git
 ```
 
 Access the project directory:
 
 ```bash
-  cd solving_sudoku_by_search_for_csp
+  cd solving_sudoku
 ```
 
 Creating a virtual environment (for the example we use the location directory parameter as `.venv`):
