@@ -190,6 +190,8 @@ Use the following command to run the game:
 
 Stuart Russell and Peter Norvig. **Artificial Intelligence: A Modern Approach**. 3rd ed., Pearson, 2009.
 
+Cabral, Lucídio dos Anjos Formiga. **Introdução à Pesquisa Operacional**. UFPB/CCEN/DE, Julho 1996.
+
 Numpy: <https://numpy.org/doc/stable/>
 
 Python-MIP: <https://docs.python-mip.com/en/latest/index.html>
